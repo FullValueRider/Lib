@@ -1,0 +1,93 @@
+Class Day02_2017
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day02.txt"
+    Private Const Year              As String = "17\RawData\"
+    
+    Private Type State
+
+        Data                            As Seq
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            Part02
+            
+    End Sub
+    
+
+    Private Sub Part01()
+
+        Initialise
+        Dim myResult As Long = 0
+        Dim myRows As IterItems = IterItems(s.Data)
+        Do
+         
+        	myResult += myRows.GetItem.reduceit(rdMax.Deb) - myRows.GetItem.reduceit(rdMin.Deb)
+            
+        Loop While myRows.MoveNext
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "51139", myResult
+        
+    End Sub
+    
+
+    Private Sub Part02()
+
+        Initialise
+        
+        Dim myResult As Long = 0
+        
+        Dim myRows As IterItems = IterItems(s.Data)
+        Do
+        	myResult += GetDivisor(myRows.GetItem.sort.reverse)
+            
+        Loop While myRows.MoveNext
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "272", myResult
+
+    End Sub
+    
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            .MapIt(mpInner(mpSplitToSubStr(ToSeq, vbTab))) _
+            .MapIt(mpInner(mpConvert(ToLong)))
+            
+    End Sub
+    
+    
+    Public Function GetDivisor(ByRef ipSeq As Seq) As Long
+    
+        Dim myFirst As IterItems = IterItems(ipSeq)
+        Do
+        	Dim mySecond As IterItems = IterItems(ipSeq).SetSpan(myFirst.Index + 1)
+            Do
+            	
+                If myFirst.GetItem Mod mySecond.GetItem = 0 Then
+                
+                    Return myFirst.GetItem / mySecond.GetItem
+                    
+                End If
+                
+            Loop While mySecond.MoveNext
+            
+        Loop While myFirst.MoveNext
+    
+    End Function
+    
+End Class

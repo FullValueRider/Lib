@@ -1,0 +1,90 @@
+Class Day05_2016
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day05.txt"
+    Private Const Year              As String = "16\RawData\"
+    
+    Private Type State
+
+        Data                            As Seq
+        Seen                            As hkvp
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            'Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+       
+        Dim myCode As String = vbNullString
+        Dim myCounter As Long = 0
+        Do
+            
+            Dim myMD5 As String = CryptoMd5Text(s.Data.Item(1) & CStr(myCounter))
+            If VBA.Left$(myMD5, 5) = "00000" Then
+                    myCode &= VBA.Mid$(myMD5, 6, 1)
+                    Debug.Print myCode
+            End If
+            myCounter += 1
+        Loop Until VBA.Len(myCode) = 8
+        
+        Dim myResult As String = myCode
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "f97c354d", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+        Dim myCode As String = "........"
+        Dim myPosition As Long = 0
+        ' Dim myChar As String = vbNullString
+        Dim myCounter As Long = 0
+        Do
+            
+            Dim myMD5 As String = MD5.DigestStrToHexStr(s.Data.Item(1) & CStr(myCounter))
+            If VBA.Left$(myMD5, 5) = "00000" Then
+                
+                If VBA.InStr("01234567", VBA.Mid$(myMD5, 6, 1)) > 0 Then
+                    myPosition = CLng(VBA.Mid$(myMD5, 6, 1)) + 1
+                    If VBA.Mid$(myCode, myPosition, 1) = "." Then
+                        Mid$(myCode, myPosition, 1) = VBA.Mid$(myMD5, 7, 1)
+                    End If
+                End If
+            End If
+            
+            myCounter += 1
+            
+        Loop Until VBA.InStr(myCode, ".") = 0
+        
+        Dim myResult As String = myCode
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "863dde27", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            
+    End Sub
+
+End Class

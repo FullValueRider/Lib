@@ -1,0 +1,120 @@
+Class Day03_2016
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day03.txt"
+    Private Const Year              As String = "16\RawData\"
+    
+    Private Type State
+
+        Data                            As Seq
+        Seen                            As hkvp
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+        Dim myValidTriangles As Seq = Seq.Deb
+        Dim mySeen As Hkvp = Hkvp.Deb
+        
+        Dim myTriangle As IterItems = IterItems(s.Data)
+        Do
+        	
+            Dim mySides As Seq = myTriangle.GetItem
+            mySides.Sort
+            Dim myKey As String = mySides.Join(Char.twComma) 'mySides.Item(1) & Char.twComma & CStr(mySides.Item(2)) & Char.twComma & CStr(mySides.Item(3))
+            If mySeen.LacksKey(myKey) Then
+                mySeen.Add myKey, mySides
+                If mySides.Item(1) + mySides.Item(2) > mySides.Item(3) Then
+                    myValidTriangles.Add mySides
+                End If
+            End If
+            
+        Loop While myTriangle.MoveNext
+        
+        Dim myResult As Long = myValidTriangles.Count
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "917", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+        
+        Set s.Data = RotateBlocksOfThree(s.Data)
+        
+        Dim myValidTriangles As Seq = Seq.Deb
+        Dim mySeen As Hkvp = Hkvp.Deb
+        
+        Dim myTriangle As IterItems = IterItems(s.Data)
+        Do
+        	
+            Dim mySides As Seq = myTriangle.GetItem
+            mySides.Sort
+            Dim myKey As String = mySides.Join(Char.twComma) 'CStr(mySides.Item(1)) & Char.twComma & CStr(mySides.Item(2)) & Char.twComma & CStr(mySides.Item(3))
+            If mySeen.LacksKey(myKey) Then
+                mySeen.Add myKey, mySides
+                If mySides.Item(1) + mySides.Item(2) > mySides.Item(3) Then
+                    myValidTriangles.Add mySides
+                End If
+            End If
+            
+        Loop While myTriangle.MoveNext
+        
+        Dim myResult As Long = myValidTriangles.Count
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "1649", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            .MapIt(mpTrimmer) _
+            .MapIt(mpReplacer(Array(Char.twSpace & Char.twSpace, Char.twSpace))) _
+            .MapIt(mpSplitToSubStr(ToSeq)) _
+            .MapIt(mpInner(mpConvert(ToLong)))
+            
+    End Sub
+    
+    ' The function below correctly rotates a block of three but
+    ' for some reason misses out the first item of the
+    ' source sequence
+    Public Function RotateBlocksOfThree(ByRef ipSeq As Seq) As Seq
+    
+        Dim mySeq As Seq = Seq.Deb
+        
+        Dim myBlock As IterItems = IterItems.Deb(s.Data).SetSpan(ipStep:=3)
+        Do
+        	
+            mySeq.Add Seq.Deb.AddItems(myBlock.GetItem(0).Item(1), myBlock.GetItem(1).Item(1), myBlock.GetItem(2).Item(1))
+            mySeq.Add Seq.Deb.AddItems(myBlock.GetItem(0).Item(2), myBlock.GetItem(1).Item(2), myBlock.GetItem(2).Item(2))
+            mySeq.Add Seq.Deb.AddItems(myBlock.GetItem(0).Item(3), myBlock.GetItem(1).Item(3), myBlock.GetItem(2).Item(3))
+            
+            'If mySeq.Count = 1734 Then Stop
+        Loop While myBlock.MoveNext
+        
+        Return mySeq
+        
+    End Function
+
+End Class

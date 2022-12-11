@@ -1,0 +1,83 @@
+Class KeyPad
+    Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = True
+    Attribute VB_Description = "A Keypad class"
+    Option Explicit
+
+	Private Const MY_TYPENAME                       As String = "Keypad"
+    
+    Private Type State
+    
+        Rows                                        As Seq
+        IgnoreChar                                  As String
+        
+    End Type
+    
+    Private s                                       As State
+    
+    '@DefaultMember
+    Public Function Deb(ByRef ipRows As String, Optional ByVal ipSeparator As String = char.twcomma, Optional ipIgnore As String = vbnullstring) As KeyPad
+        With New KeyPad
+            Dim myRows As Seq = Seq.Deb(VBA.Split(ipRows, ipSeparator))
+            Return .ConstructInstance(myRows, ipIgnore)
+        End With
+    End Function
+
+    
+    Friend Function ConstructInstance(ByRef ipRows As Seq, ByVal ipIgnore As String) As KeyPad
+    
+        s.IgnoreChar = ipIgnore
+        
+        Set s.Rows = ipRows.MapIt(mpSplitToChars.Deb(SplitType.ToSeq))
+        
+        Return Me
+        
+    End Function
+    
+    
+    Public Function Blocked(ByRef ipBlockingChars As String) As Hkvp
+    
+        Dim myBlocked As Hkvp = Hkvp.Deb
+        Dim myRow As IterItems = IterItems(s.Rows)
+        Do
+        
+            Dim myPoint As IterItems = IterItems(myRow.GetItem)
+            Do
+                
+                If VBA.InStr(ipBlockingChars, myPoint.GetItem) > "0" Then
+                
+                    myBlocked.Add CStr(myRow.Key) & Char.twComma & CStr(myPoint.Key), myPoint.getItem
+                
+                
+                End If
+                
+            Loop While myPoint.MoveNext
+            	
+        Loop While myRow.MoveNext
+        	
+        Return myBlocked
+        
+    End Function
+    
+    
+    Public Property Get Key(ByRef ipX As Long, ByRef ipY As Long) As String
+        Dim myColSeq As Seq = s.Rows.Item(ipX)
+        Return myColSeq.Item(ipY)
+    End Property
+    
+    Public Property Let Key(ByRef ipx As Long, ByRef ipY As Long, ByRef ipKey As String)
+    	s.Rows.Item(ipx).Item(ipY) = ipKey
+    End Property
+    
+    Public Function IsIgnore(ByRef ipx As Long, ByRef ipY As Long) As Boolean
+        Return Key(ipx, ipY) = s.IgnoreChar
+    End Function
+    
+    Public Property Get TypeName() As String
+        Return MY_TYPENAME
+    End Property
+    
+    
+End Class

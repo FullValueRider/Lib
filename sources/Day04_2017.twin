@@ -1,0 +1,81 @@
+Class Day04_2017
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day04.txt"
+    Private Const Year              As String = "17\RawData\"
+
+    Private Type State
+
+        Data                            As Seq
+        Seen                            As hkvp
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+       
+        Dim myResult As Long = 0
+        
+        Dim myPassPhrases As IterItems = IterItems(s.Data)
+        Dim mySeq As Seq
+        Do
+                Set mySeq = myPassPhrases.GetItem
+                If mySeq.IsUnique Then
+                    myResult += 1
+                End If
+            
+        Loop While myPassPhrases.MoveNext
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "477", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+        
+         Dim myResult As Long = 0
+         
+         Set s.Data = s.Data.MapIt(mpInner(mpSort))
+        
+        Dim myPassPhrases As IterItems = IterItems(s.Data)
+        Dim mySeq As Seq
+        Do
+                Set mySeq = myPassPhrases.GetItem
+                If mySeq.IsUnique Then
+                    myResult += 1
+                End If
+            
+        Loop While myPassPhrases.MoveNext
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "167", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            .MapIt(mpSplitToSubStr(ToSeq, Char.twSpace))
+            
+    End Sub
+
+End Class

@@ -1,0 +1,174 @@
+Class Day04_2016
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day04.txt"
+    Private Const Year              As String = "16\RawData\"
+    
+    Private Type State
+
+        Data                            As Seq
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+       
+        Dim myResult As Long = 0
+        
+        Dim myRooms As IterItems = IterItems(s.Data)
+        Do
+            
+            If IsValidRoom(myRooms.GetItem) Then
+            
+            	myResult += VBA.CLng(myRooms.GetItem.Item(myRooms.GetItem().Count - 1))
+                
+                
+            End If
+        
+        Loop While myRooms.MoveNext
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "245102", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+
+        Dim myDecryptedRooms As Seq = Seq.Deb
+        Dim myResult As Long = 0
+        
+        Dim myRooms As IterItems = IterItems(s.Data)
+        Do
+            
+            If VBA.InStr(DecryptRoomName(myRooms.GetItem), "north") > 0 Then
+            
+                myResult = CLng(myRooms.GetItem.item(myRooms.GetItem.count - 1))
+                Exit Do
+                
+            End If
+            
+        Loop While myRooms.MoveNext
+        
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "324", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            .MapIt(mpReplacer(Array(Char.twRBracket, vbNullString), Array(Char.twLBracket, Char.twHyphen))) _
+            .MapIt(mpSplitToSubStr.Deb(ToSeq, Char.twHyphen))
+    End Sub
+    
+    
+    Public Function IsValidRoom(ByRef ipSeq As Seq) As Boolean
+    
+        Dim myLetters As Hkvp = Hkvp.Deb
+        
+        Dim myString As IterItems = IterItems(ipSeq)
+        Do
+        
+            ' Process strings until we reach one that can be interpreted as number (the room id)
+            If VBA.IsNumeric(myString.GetItem) Then
+            	Exit Do
+            End If
+            
+            Dim myChar As IterItems = IterItems(myString.GetItem)
+            
+            ' Get the frequency of individual letters
+            Do
+                If myLetters.HoldsKey(myChar.GetItem) Then
+                
+                    myLetters.Item(myChar.GetItem) += 1
+                    
+                Else
+                    myLetters.Add myChar.GetItem, 1
+                
+                End If
+                
+            Loop While myChar.MoveNext
+        
+            
+        Loop While myString.MoveNext
+        
+        Dim myRoomChecksum As String = myString.GetItem(1)
+    
+        ' ' reverse the keys and values in the Hkvp
+        ' ' allvalues will give an Hkvp of Freq vs Hkvp of key vs index     
+       
+        Dim myMirror As Hkvp = myLetters.Mirror(MirrorType.ByAllValues)
+        Dim myCode As Seq = Seq.Deb
+        
+        ' Get the frequencies in descending order
+        Dim myFreqs As IterItems = IterItems(myMirror.KeysSeq.Sort.reverse)
+        Do
+            Dim myFreq As Long = myFreqs.GetItem
+            ' sort the original keys associated with this frequency in alphabetical order
+            ' then add to the accumlator for the original keys
+            If myCode.Count >= 5 Then
+                Exit Do
+            End If
+            
+        Loop While myFreqs.MoveNext
+        
+        ' We now have a sequence where the keys are organised by freq and withing each freq by ascending order
+        ' so we can now take the first five keys to make the checksum.
+        Return VBA.Left$(myCode.Join(vbNullString), 5) = myRoomChecksum
+    
+    End Function
+    
+    Public Function DecryptRoomName(ByVal ipRoom As Seq) As String
+    
+        Dim myDecrypted As Seq = Seq.Deb
+        Dim myWords As IterItems = IterItems(ipRoom)
+        
+        Dim myRoomId As Long = CLng(ipRoom.Item(ipRoom.Count - 1)) Mod 26
+        Dim myDecryptedWord As String = vbNullString
+        Do
+        	Dim myWord As String = myWords.GetItem
+            If VBA.IsNumeric(myWord) Then
+                Exit Do
+            End If
+            Dim myChars As IterItems = IterItems(myWord)
+            Do
+            	Dim myAsc As Long = VBA.Asc(myChars.GetItem) + myRoomId
+                
+            	If myAsc > VBA.Asc("z") Then
+                
+                    myAsc -= 26
+                    
+                End If
+                
+                myDecryptedWord &= VBA.Chr(myAsc)
+                'Debug.Print myDecryptedWord
+                
+            Loop While myChars.MoveNext
+            myDecryptedWord &= Char.twSpace
+            
+        Loop While myWords.MoveNext
+        
+        Return myDecryptedWord
+        
+    End Function
+End Class

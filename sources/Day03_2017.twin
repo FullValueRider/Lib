@@ -1,0 +1,77 @@
+Class Day03_2017
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day03.txt"
+    Private Const Year              As String = "17\RawData\"
+
+    Private Type State
+
+        Data                            As Seq
+        Seen                            As hkvp
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            'Part01
+            'Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+        ' For spiral memory, each ring after the initial point has a perimeter of (edge)*4)
+        
+        Dim myPerimSum As Long = 1
+        Dim myPerim As Long = 1
+        Dim myEdge As Long = 2
+        Dim myStartX As Long
+        Dim myStartY As Long
+        Do While myPerimSum + myEdge * 4 < s.Data.Item(1)
+        	
+            myPerimSum += myEdge * 4
+            myEdge += 2
+            myPerim += 1
+            
+        Loop
+        
+        ' The start point is considered as 0,0
+        ' each subsequent perimeter starts at
+        
+        Dim myResult As Long
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "xxxx", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+        
+        
+        
+        Dim myResult As Long
+        
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "yyyy", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today))
+            
+    End Sub
+
+End Class

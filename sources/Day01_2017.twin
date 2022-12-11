@@ -1,0 +1,84 @@
+Class Day01_2017
+
+	Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = False
+    Option Explicit
+    '========1=========2=========3=========4=========5=========6=========7=========8=========9=========A=========B=========C
+
+
+    Private Const Today             As String = "Day01.txt"
+    Private Const Year              As String = "17\RawData\"
+    
+    Private Type State
+
+        Data                            As Seq
+        Seen                            As hkvp
+        
+    End Type
+
+    Private s                           As State
+
+
+    Public Sub Execute()
+        
+            Part01
+            Part02
+            
+    End Sub
+
+    Private Sub Part01()
+
+        Initialise
+        
+        Dim myResult As Long = 0
+        Dim myChars As IterItems = IterItems(s.Data.Item(1))
+        Do
+        	
+            If myChars.GetItem = myChars.GetItem(1) Then
+                myResult += VBA.CLng(myChars.GetItem)
+            End If
+            
+        Loop While myChars.MoveNext
+        
+        If VBA.Left(s.Data.Item(1), 1) = VBA.Right(s.Data.Item(1), 1) Then
+            myResult += VBA.CLng(VBA.Left(s.Data.Item(1), 1))
+        End If
+        
+        Fmt.Dbg "The answer to Day {0} part 1 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "1119", myResult
+        
+    End Sub
+
+    Private Sub Part02()
+
+        Initialise
+        Dim myOffset As Long = VBA.Len(s.Data.Item(1)) / 2
+        Dim myResult As Long = 0
+        Dim myChars As IterItems = IterItems(s.Data.Item(1))
+        Do
+        	If myChars.Index > myOffset Then
+            	If myChars.GetItem = myChars.GetItem(-myOffset) Then
+                    myResult += CLng(myChars.GetItem)
+                End If
+        	Else
+                If myChars.GetItem = myChars.GetItem(myOffset) Then
+                    myResult += VBA.CLng(myChars.GetItem)
+                End If
+            End If
+        Loop While myChars.MoveNext
+  
+        Fmt.Dbg "The answer to Day {0} part 2 is {1}.  Found is {2}", VBA.Mid$(Today, 4, 2), "1420", myResult
+
+    End Sub
+
+    ' Process the incoming data to a suitable format
+    Private Sub Initialise()
+
+        Set s.Data = Seq.Deb(Filer.GetFileAsArrayOfStrings(AoCData & Year & Today)) _
+            
+    End Sub
+    
+    
+
+End Class

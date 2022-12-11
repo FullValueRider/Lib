@@ -1,0 +1,24 @@
+Module MainModule
+
+	Option Explicit
+
+    Public Const AoCData As String = "C:\Users\slayc\source\repos\AoC20"
+    
+    Public Sub Main()
+        Dim myDuration As Variant
+        myDuration = Timer
+
+        ' Day02_2016.Execute
+        ' Day03_2016.Execute
+        ' Day04_2016.Execute
+        Day01_2017.Execute
+        Day02_2017.Execute
+        Day03_2017.Execute
+        Day04_2017.Execute
+        
+        myDuration = Timer - myDuration
+        Debug.Print "Executed in " & myDuration & " Seconds"
+        
+    End Sub
+
+End Module

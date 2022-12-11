@@ -1,0 +1,77 @@
+Class Rng
+
+    Attribute VB_GlobalNameSpace = False
+    Attribute VB_Creatable = True
+    Attribute VB_PredeclaredId = True
+    Attribute VB_Exposed = True
+
+    Option Explicit
+
+    Private Type Properties
+        
+        ' for the moment just concentrate on start and run values
+        StartNative                                 As Variant
+        Start1Based                                 As Long
+        start0Based                                 As long
+        Run
+        
+    End Type
+
+    Private p                                       As Properties
+
+    [ DefaultMember ]
+    Public Function Deb(ByVal ipStart As Long, ByVal ipRun As Long, Optional ipStartN As Variant = Empty) As Rng
+        With New Rng
+            Set Deb = .ConstructInstance(ipStart, ipRun, ipStartN)
+        End With
+    End Function
+
+    Friend Function ConstructInstance(ByVal ipStart As Long, ByVal ipRun As Long, ipStartN As Variant) As Rng
+        
+        p.Start1Based = ipStart
+        p.start0Based = ipStart - 1
+        p.StartNative = ipStartN
+        p.Run = ipRun
+        Return Me
+        
+    End Function
+
+    Public Property Get Start() As Long
+        Return p.Start1Based
+    End Property
+
+    Public Property Let Start(ByVal ipStart As Long)
+        p.StartNative = p.StartNative + ipStart - p.Start1Based
+        p.Start1Based = ipStart
+        p.start0Based = ipStart - 1
+        
+    End Property
+
+    Public Property Get Start1() As Long
+        Return p.Start1Based
+    End Property
+
+    Public Property Let Start0(ByVal ipStart As Long)
+        p.StartNative = p.StartNative + ipStart - p.start0Based
+        p.Start1Based = ipStart + 1
+        p.start0Based = ipStart
+    End Property
+
+    Public Property Get StartN() As Long
+        Return p.Start1Based
+    End Property
+
+    Public Property Let StartN(ByVal ipStart As Long)
+        p.start0Based = p.start0Based + p.StartNative = ipStart
+        p.Start1Based = p.start0Based + 1
+        p.StartNative = ipStart
+    End Property
+
+    Public Property Get Run() As Long
+        Return p.Run
+    End Property
+
+    Public Property Let Run(ByVal ipRun As Long)
+        p.Run = ipRun
+    End Property
+End Class
