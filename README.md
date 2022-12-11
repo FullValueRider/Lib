@@ -1,5 +1,10 @@
-# LIb
+# Lib
  A twinBasic Library with useful classes for solving Advent Of Code problems.
+ 
+ The sources directory contains
+ * Individual source files
+ * a xip of the source files
+ * a zip of the twinbadic project file.
 
  CAVEAT:  I'm not a professional programmer so there will be some ugly/knarly stuff in the library.
 
